@@ -10,20 +10,24 @@
       var saved = localStorage.getItem(THEME_KEY);
       if (saved === "dark" || saved === "light") return saved;
     } catch (e) {}
-    return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches
-      ? "dark"
-      : "light";
+    return "dark";
   }
 
   function paintTheme(theme) {
     root.setAttribute("data-bs-theme", theme);
+    root.style.colorScheme = theme;
 
     var buttons = document.querySelectorAll("[data-theme-toggle]");
     for (var i = 0; i < buttons.length; i++) {
       var btn = buttons[i];
       var icon = btn.querySelector("[data-theme-icon]");
       var label = btn.querySelector("[data-theme-label]");
-      btn.setAttribute("aria-pressed", theme === "dark" ? "true" : "false");
+      var isSwitch = btn.getAttribute("role") === "switch";
+      if (isSwitch) {
+        btn.setAttribute("aria-checked", theme === "dark" ? "true" : "false");
+      } else {
+        btn.setAttribute("aria-pressed", theme === "dark" ? "true" : "false");
+      }
       btn.setAttribute(
         "aria-label",
         theme === "dark" ? "Cambiar a tema claro" : "Cambiar a tema oscuro"
@@ -32,8 +36,8 @@
         "title",
         theme === "dark" ? "Cambiar a tema claro" : "Cambiar a tema oscuro"
       );
-      if (icon) icon.className = theme === "dark" ? "bi bi-sun" : "bi bi-moon-stars";
-      if (label) label.textContent = theme === "dark" ? "Tema claro" : "Tema oscuro";
+      if (icon) icon.className = theme === "dark" ? "bi bi-moon-stars" : "bi bi-sun";
+      if (label) label.textContent = theme === "dark" ? "Oscuro" : "Claro";
     }
 
     document.dispatchEvent(
@@ -56,17 +60,6 @@
       var next = root.getAttribute("data-bs-theme") === "dark" ? "light" : "dark";
       setTheme(next);
     });
-    if (window.matchMedia) {
-      var mq = window.matchMedia("(prefers-color-scheme: dark)");
-      var onChange = function () {
-        try {
-          if (localStorage.getItem(THEME_KEY)) return;
-        } catch (e) {}
-        paintTheme(mq.matches ? "dark" : "light");
-      };
-      if (mq.addEventListener) mq.addEventListener("change", onChange);
-      else if (mq.addListener) mq.addListener(onChange);
-    }
   }
 
   /* ---------- toasts ---------- */

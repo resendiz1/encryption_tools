@@ -558,6 +558,11 @@
     editor.on("change", function () {
       if (!suppress) debouncedUpdate();
     });
+    document.addEventListener("bytekit:theme", function () {
+      window.setTimeout(function () {
+        editor.refresh();
+      }, 40);
+    });
   }
 
   initEditor();
